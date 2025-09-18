@@ -9,6 +9,7 @@ from rich.text import Text
 # --- Configuration ---
 APP_NAME = "PackLens"
 MAIN_SCRIPT = "app.py"
+VERSION_FILE = "version.txt"
 # ---------------------
 
 console = Console()
@@ -37,6 +38,7 @@ def build():
         f'--name={APP_NAME}',
         '--onefile',
         '--windowed',
+        f'--version-file={VERSION_FILE}',
         '--add-data=backend;backend',
         '--add-data=web;web',
     ]
@@ -93,6 +95,7 @@ def display_summary():
     summary_text = Text.assemble(
         ("Application: ", "bold"), (f"{APP_NAME}\n"),
         ("Platform: ", "bold"), (f"{platform.system()} {platform.machine()}\n"),
+        ("Version Info: ", "bold"), (f"Embedded from {VERSION_FILE}\n"),
         ("Location: ", "bold"), (f"{os.path.abspath(executable_path)}\n", "cyan"),
         ("Size: ", "bold"), (f"{file_size}", "magenta")
     )
