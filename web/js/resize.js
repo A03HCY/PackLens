@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('pywebviewready', () => {
     let activeHandle = null;
     let initialMouseX = 0;
     let initialMouseY = 0;

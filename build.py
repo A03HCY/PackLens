@@ -2,17 +2,79 @@ import PyInstaller.__main__
 import os
 import shutil
 import platform
+try:
+    import tomllib
+except ImportError:
+    import toml as tomllib
+from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-# --- Configuration ---
-APP_NAME = "PackLens"
-MAIN_SCRIPT = "app.py"
-VERSION_FILE = "version.txt"
-# ---------------------
+# --- Load Configuration ---
+with open('build.toml', 'rb') as f:
+    config = tomllib.load(f)
+
+# App Config
+app_config = config.get('app', {})
+APP_NAME = app_config.get('app_name')
+MAIN_SCRIPT = app_config.get('main_script')
+INCLUDE_SSL = app_config.get('include_ssl', True)
+VERSION_FILE = "version.txt" # This is temporary
+
+# Version Config
+version_config = config.get('version', {})
+VERSION = version_config.get('version')
+COMPANY_NAME = version_config.get('company_name')
+FILE_DESCRIPTION = version_config.get('file_description')
+INTERNAL_NAME = version_config.get('internal_name')
+PRODUCT_NAME = version_config.get('product_name')
+LEGAL_COPYRIGHT = f"© {datetime.now().year} {COMPANY_NAME}. All rights reserved."
+ORIGINAL_FILENAME = f"{APP_NAME}.exe"
+# ---------------------------
 
 console = Console()
+
+def create_version_file():
+    """Generates the version.txt file from configuration."""
+    console.print(f"[bold yellow]Generating {VERSION_FILE}...[/bold yellow]")
+    
+    major, minor, patch, build_num = VERSION.split('.')
+    
+    version_info_content = f"""
+# UTF-8
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=({major}, {minor}, {patch}, {build_num}),
+    prodvers=({major}, {minor}, {patch}, {build_num}),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+      StringTable(
+        u'040904B0',
+        [StringStruct(u'CompanyName', u'{COMPANY_NAME}'),
+        StringStruct(u'FileDescription', u'{FILE_DESCRIPTION}'),
+        StringStruct(u'FileVersion', u'{VERSION}'),
+        StringStruct(u'InternalName', u'{INTERNAL_NAME}'),
+        StringStruct(u'LegalCopyright', u'{LEGAL_COPYRIGHT}'),
+        StringStruct(u'OriginalFilename', u'{ORIGINAL_FILENAME}'),
+        StringStruct(u'ProductName', u'{PRODUCT_NAME}'),
+        StringStruct(u'ProductVersion', u'{VERSION}')])
+      ]), 
+    VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
+  ]
+)
+"""
+    with open(VERSION_FILE, "w", encoding="utf-8") as f:
+        f.write(version_info_content)
+    console.print(f"[green]{VERSION_FILE} generated successfully.[/green]\n")
 
 def cleanup():
     """Removes temporary build files and directories."""
@@ -43,6 +105,17 @@ def build():
         '--add-data=web;web',
     ]
 
+    # Exclude PyQt/PySide on Windows, as EdgeChromium is used
+    if platform.system() == "Windows":
+        qt_modules_to_exclude = ['PyQt5', 'PyQt6', 'PySide2', 'PySide6']
+        for module in qt_modules_to_exclude:
+            pyinstaller_args.append(f'--exclude-module={module}')
+            
+    # Exclude cryptography if SSL is not included
+    if not INCLUDE_SSL:
+        pyinstaller_args.append('--exclude-module=cryptography')
+        console.print("[bold yellow]SSL support is disabled. Excluding 'cryptography' module.[/bold yellow]")
+
     console.print(Panel.fit(
         f"[bold cyan]Starting PyInstaller for {APP_NAME}[/bold cyan]",
         title="Build Process"
@@ -63,12 +136,23 @@ def build():
 def post_build_cleanup():
     """Cleans up artifacts left after the build."""
     console.print("\n[bold yellow]Cleaning up post-build artifacts...[/bold yellow]")
-    if os.path.isdir('build'):
-        shutil.rmtree('build')
-        console.print("  [dim]Removed directory:[/] build")
-    if os.path.isfile(f'{APP_NAME}.spec'):
-        os.remove(f'{APP_NAME}.spec')
-        console.print(f"  [dim]Removed file:[/] {APP_NAME}.spec")
+    paths_to_remove = [
+        'build', 
+        f'{APP_NAME}.spec',
+        VERSION_FILE
+    ]
+    
+    for path in paths_to_remove:
+        try:
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+                console.print(f"  [dim]Removed directory:[/] {path}")
+            elif os.path.isfile(path):
+                os.remove(path)
+                console.print(f"  [dim]Removed file:[/] {path}")
+        except FileNotFoundError:
+            pass # Ignore if path doesn't exist
+            
     console.print("[green]Post-build cleanup complete.[/green]")
 
 def get_file_size(path):
@@ -109,6 +193,7 @@ def display_summary():
 
 if __name__ == '__main__':
     cleanup()
+    create_version_file()
     if build():
         post_build_cleanup()
         display_summary()

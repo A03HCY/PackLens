@@ -1,0 +1,11 @@
+[app]
+app_name = 'PackLens'
+main_script = 'app.py'
+include_ssl = false
+
+[version]
+version = '1.0.0.0'
+company_name = 'A03HCY'
+file_description = 'PackLens Application'
+internal_name = 'PackLens'
+product_name = 'PackLens'

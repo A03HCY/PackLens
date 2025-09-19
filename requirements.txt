@@ -1,3 +1,9 @@
+# For running the application
 pywebview
+
+# Optional: For SSL support
+cryptography
+
+# For building the application with PyInstaller
 pyinstaller
 rich
