@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>PackLens</title>
+  <link rel="stylesheet" href="css/resize.css">
+  <link rel="stylesheet" href="css/icon.css">
+  <style>
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      /**禁用字体缩放**/
+      -webkit-text-size-adjust: none;
+    }
+
+    /**隐藏未加载的组件**/
+    :not(:defined) {
+      display: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <s-page theme="auto">
+    <s-drawer>
+
+      <div slot="start" style="width: auto;">
+        <s-navigation mode="rail" onchange="console.log(this.selectedIndex)">
+
+          <s-icon-button slot="start" type="filled-tonal">
+            <s-icon name="add"></s-icon>
+          </s-icon-button>
+
+          <s-navigation-item onclick="window.location.href='#'" selected="true">
+            <s-icon name="home" slot="icon"></s-icon>
+            <div slot="text">首页</div>
+          </s-navigation-item>
+
+        </s-navigation>
+      </div>
+
+      <!--应用栏-->
+      <s-appbar style="margin: 0;" class="pywebview-drag-region">
+
+        <s-icon-button slot="navigation" onclick="document.querySelector('s-drawer').toggle()">
+          <s-icon name="menu"></s-icon>
+        </s-icon-button>
+
+        <div slot="headline"> Title </div>
+
+        <s-tooltip slot="action">
+          <s-icon-button slot="trigger" id="minimize_btn">
+            <s-icon><span class="icon">remove</span></s-icon>
+          </s-icon-button>
+          最小化
+        </s-tooltip>
+
+        <s-tooltip slot="action">
+          <s-icon-button slot="trigger" id="maximize_btn">
+            <s-icon><span class="icon" id="fullscreen_icon">fullscreen</span></s-icon>
+          </s-icon-button>
+          最大化
+        </s-tooltip>
+
+        <s-tooltip slot="action" id="close_btn">
+          <s-icon-button slot="trigger">
+            <s-icon><span class="icon">close</span></s-icon>
+          </s-icon-button>
+          关闭
+        </s-tooltip>
+
+      </s-appbar>
+
+      <s-scroll-view style="flex-grow: 1;">
+        <main style="width: 100%;display: flex;justify-content: center;align-items: center;">
+
+          <div class="container">
+            <h1>欢迎!</h1>
+            <p>这是一个静态内容页面。</p>
+          </div>
+
+        </main>
+      </s-scroll-view>
+
+    </s-drawer>
+  </s-page>
+
+  <div id="resize_handle_se"></div>
+  <div id="resize_handle_e"></div>
+  <div id="resize_handle_s"></div>
+  <script src="js/resize.js"></script>
+  <script src="js/sober.js"></script>
+  <script>
+    document.addEventListener('gesturestart', (event) => event.preventDefault())
+  </script>
+</body>
+
+</html>

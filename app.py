@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # Create a webview window
     window = webview.create_window(
         'PackLens',
-        'web/index.html',
+        'web/frame.html',
         js_api=api_instance,
         width=800,
         height=600,

@@ -1,0 +1,35 @@
+/* Corner resize handle (South-East) */
+#resize_handle_se {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background-color: rgba(255, 0, 0, 0.5); /* Red for corner */
+    cursor: se-resize;
+    z-index: 9999;
+}
+
+/* Edge resize handle (East) */
+#resize_handle_e {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: calc(100% - 8px); /* Avoid overlapping with title bar and corner handle */
+    background-color: rgba(0, 0, 255, 0.5); /* Blue for edge */
+    cursor: e-resize;
+    z-index: 9998;
+}
+
+/* Edge resize handle (South) */
+#resize_handle_s {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: calc(100% - 8px); /* Avoid overlapping with corner handle */
+    height: 8px;
+    background-color: rgba(0, 0, 255, 0.5); /* Blue for edge */
+    cursor: s-resize;
+    z-index: 9998;
+}
