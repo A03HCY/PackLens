@@ -1,6 +1,6 @@
 import webview
 import sys
-from backend import api
+from backend import API
 from importlib.metadata import distribution
 
 '''
@@ -42,7 +42,7 @@ def check_library(library_name, import_name=None):
 
 if __name__ == '__main__':
     # Create an instance of the API class
-    api_instance = api.API()
+    api_instance = API()
     ssl_mode = check_library('cryptography')[0]
 
     print(f'Debug mode: {debug_mode()}')
