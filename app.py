@@ -2,6 +2,7 @@ import webview
 import sys
 from backend import API
 from importlib.metadata import distribution
+from server import create_app
 
 '''
 This is the main entry point for the application.
@@ -41,7 +42,7 @@ def check_library(library_name, import_name=None):
             return False, "Not installed"
 
 if __name__ == '__main__':
-    # Create an instance of the API class
+    app = create_app()
     api_instance = API()
     ssl_mode = check_library('cryptography')[0]
 
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     # Create a webview window
     window = webview.create_window(
         'PackLens',
-        'web/frame.html',
+        app,
         js_api=api_instance,
         width=800,
         height=600,
